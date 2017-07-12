@@ -2,6 +2,7 @@ require 'csv'
 require 'sqlite3'
 require 'pry'
 
+
 years = []
 occupation = []
 shows = []
@@ -44,23 +45,19 @@ years.each_with_index do |year,ind|
 	sql = "INSERT INTO shows (year, show) VALUES (?, ?)"
 
 	db.execute(sql, year, shows[ind])
-	#binding.pry
 end
 
 guests.uniq.each do |guest|
-	sql = "INSERT INTO guests (name, groups, occupation) VALUES (?,?,?)"
-	counter = 0
-	ind = 0
-	index_counter = 0
-	CSV.foreach('daily_show_guests.csv') do |row|
-		if row[4] == guest && counter == 0
-			ind = index_counter
-			counter += 1
-		end
-		index_counter += 1
+	sql_guests = "INSERT INTO guests (name, groups, occupation) VALUES (?,?,?)"
+	
+	
+	ind = CSV.foreach('daily_show_guests.csv').find_index do |row|
+		row[4] == guest
 	end
 
-	db.execute(sql, guest, groups[ind], occupation[ind])
+	db.execute(sql_guests, guest, groups[ind], occupation[ind])
+	
+	
 end
 
 guests.uniq.each do |guest|
@@ -81,3 +78,18 @@ guests.uniq.each do |guest|
 
 
 end
+
+ # guests.uniq.each do |guest|
+ # 	sql_show_guests = "INSERT INTO show_guests (guests_id, shows_id) VALUES (?,?)"
+ 	
+	# ind = CSV.foreach('daily_show_guests.csv').find_index do |row|
+	# 	row[4] == guest
+	# end
+
+	# get_guest = "SELECT id FROM guests WHERE guests.name = ?"
+	# guest_table_id = db.execute(get_guest, guest)
+	
+	# db.execute(sql_show_guests, guest_table_id, ind)
+
+
+ # end
